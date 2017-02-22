@@ -1,15 +1,34 @@
 var SelectDishController = function(view, model, sc){
+    var self = this;
+    var dishesToShow = [];
 
     view.searchButton.onclick = function(e){
+    	dishesToShow = [];	
     	var foodList = $("#selectDish").find("#foodList").get(0);
         foodList.innerHTML = '';
     	var filter = $("#selectDish").find("#selectedDishSearch").get(0).value;
+    	console.log(filter);	
     	var type = $("#selectDish").find("#chosenCourse").get(0).value;
-    	var dishesToShow = model.getAllDishes(type,filter);
+    	foodList.innerHTML = "<img src='images/39.gif'>";
+    	model.getAllDishes(type,filter, function(d, value){
+    		dishesToShow.push(d);
+    		if(dishesToShow.length > (value - 1)){
+    			foodList.innerHTML = "";
+    			self.populateDishList();
+    		}
 
+    	});
+
+
+    }
+    view.searchButton.click();
+
+    this.populateDishList = function(){
+    	var foodList = $("#selectDish").find("#foodList").get(0);
     	var counter = 0;
     	for(var i = 0; i < dishesToShow.length; i++){
     		var dish = dishesToShow[i];
+
 
 	        //FOOD CONTAINER 1
 	        var foodContainer = document.createElement("div");
@@ -22,7 +41,7 @@ var SelectDishController = function(view, model, sc){
 
 	        //FOOD PICTURE 2
 	        var pictureOfFood = document.createElement("img");
-	        pictureOfFood.setAttribute("src", "images/" + dish.image);
+	        pictureOfFood.setAttribute("src", "https://spoonacular.com/recipeImages/" + dish.image);
 	        pictureOfFood.className += " selectDishFoodPicture";
 	        foodContainer.append(pictureOfFood);
 
@@ -43,7 +62,6 @@ var SelectDishController = function(view, model, sc){
 	        foodDescription.innerHTML = dish.description;
 	        foodContainer.append(foodDescription);
 	    }
-    }
-    view.searchButton.click();
+	}
 
 }

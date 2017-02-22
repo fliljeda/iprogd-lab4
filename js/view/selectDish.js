@@ -87,8 +87,8 @@ var SelectDish = function (container, dinnermodel) {
     option.setAttribute("value", "starter");
     courseSelector.append(option);
     var option2 = document.createElement("option");
-    option2.innerHTML = "main dish";
-    option2.setAttribute("value", "main dish");
+    option2.innerHTML = "main course";
+    option2.setAttribute("value", "main course");
     courseSelector.append(option2);
     var option3 = document.createElement("option");
     option3.innerHTML = "dessert";
