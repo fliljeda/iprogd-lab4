@@ -16,13 +16,13 @@ var Overview = function(container, model) {
 	model.addObserver(this);
 	this.update = function (obj) {
 		starter = model.getSelectedDish("starter");
-		main = model.getSelectedDish("main dish");
+		main = model.getSelectedDish("main course");
 		dessert = model.getSelectedDish("dessert");
 		guests = model.getNumberOfGuests();
 		container.find("#dinnerGuests").html("My Dinner: " + guests + " people");
 
 		if(!(typeof(starter) == 'undefined')){
-			container.find("#startImage").attr('src', 'images/' + starter.image);
+			container.find("#startImage").attr('src', starter.image);
 			container.find("#startName").html(starter.name);
 			container.find('#startPrice').html(this.getTotalDishPrice(starter,guests) + ' SEK');
 
@@ -33,7 +33,7 @@ var Overview = function(container, model) {
 		}
 
 		if(!(typeof(main) == 'undefined')){
-			container.find("#mainImage").attr('src', 'images/' + main.image);
+			container.find("#mainImage").attr('src', main.image);
 			container.find("#mainName").html(main.name);
 			container.find('#mainPrice').html(this.getTotalDishPrice(main,guests) + ' SEK');
 		}else{
@@ -43,7 +43,7 @@ var Overview = function(container, model) {
 		}
 
 		if(!(typeof(dessert) == 'undefined')){
-			container.find("#dessertImage").attr('src', 'images/' + dessert.image);
+			container.find("#dessertImage").attr('src', dessert.image);
 			container.find("#dessertName").html(dessert.name);
 			container.find('#dessertPrice').html(this.getTotalDishPrice(dessert,guests) + ' SEK');
 

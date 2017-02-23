@@ -22,7 +22,9 @@ var DinnerModel = function() {
     }
 
     this.setDishToShow = function(dishId){
-        var messengerObj = {dishId:dishId};
+        var messengerObj = {
+        	dishId:dishId
+        };
         currentDishId = dishId;
         notifyObservers(messengerObj);
 
@@ -69,10 +71,12 @@ var DinnerModel = function() {
 	this.getAllIngredients = function() {
         var allIngredients = [];
         for(var i = 0; i < selectedDishes.length; i++){
-            var dishIngredients = selectedDishes[i].ingredients;
-            for(var j = 0; j < dishIngredients.length; j++){
-                allIngredients.push(dishIngredients[j]);
-            }
+	        if (!(typeof(selectedDishes[i].ingredients) == 'undefined')){
+            	var dishIngredients = selectedDishes[i].ingredients;
+	            for(var j = 0; j < dishIngredients.length; j++){
+	                allIngredients.push(dishIngredients[j]);
+	            }
+	        }
         }
         return allIngredients;
 	}
@@ -90,16 +94,20 @@ var DinnerModel = function() {
 	//Adds the passed dish to the menu. If the dish of that type already exists on the menu
 	//it is removed from the menu and the new one added.
 	this.addDishToMenu = function(id) {
-        var dishToAdd = this.getDish(id);
+        var dishToAdd = {};
+        this.getDish(id, function (dishToGet) {
+        	dishToAdd = dishToGet;
 
-        for(var i = 0; i < selectedDishes.length; i++){
-          if(selectedDishes[i].type === dishToAdd.type){
-            this.removeDishFromMenu(selectedDishes[i].id);
-          }
-        }
+	        for(var i = 0; i < selectedDishes.length; i++){
+	          if(selectedDishes[i].type === dishToAdd.type){
+	            dinnerSelf.removeDishFromMenu(selectedDishes[i].id);
+	          }
+	        }
 
-        selectedDishes.push(dishToAdd);
-        notifyObservers();
+	        selectedDishes.push(dishToAdd);
+	        notifyObservers();
+        });
+
 	}
 
 	//Removes dish from menu
@@ -115,7 +123,7 @@ var DinnerModel = function() {
 	//function that returns all dishes of specific type (i.e. "starter", "main dish" or "dessert")
 	//you can use the filter argument to filter out the dish by name or ingredient (use for search)
 	//if you don't pass any filter all the dishes will be returned
-	this.getAllDishes = function (type,filter, cb) {
+	this.getAllDishes = function (type,filter, cb, cberr) {
 	  /*return dishes.filter(function(dish) {
 		var found = true;
 		if(filter){
@@ -145,6 +153,8 @@ var DinnerModel = function() {
 				type : dishType
 			},
 			success: function(data) {
+				if(data.results.length == 0) cberr(-3000);
+
 				for (var i = 0; i < data.results.length; i++){
 					var dish = {};
 					dish.name = data.results[i].title;
@@ -156,24 +166,48 @@ var DinnerModel = function() {
 				
 			},
 			error: function(data) {
-				console.log(data);
+				cberr(404);
 			}
 		});
 	}
 
 	//function that returns a dish of specific ID
-	this.getDish = function (id) {
+	this.getDish = function (id,cb) {
 	  $.ajax({
 			url: 'https://spoonacular-recipe-food-nutrition-v1.p.mashape.com/recipes/' + id + '/information',
 			headers : APIHeader,
+			
 			success: function(data){
+				var dish = {};
+				dish.name = data.title;
+				dish.image = data.image;
+				dish.description = data.instructions;
+				dish.id = id;
+				dish.type = dinnerSelf.findProperDishType(data.dishTypes);
+				dish.ingredients = [];
+				for (var j = 0; j < data.extendedIngredients.length; j++){
+					dish.ingredients.push({});
+					dish.ingredients[j].name = data.extendedIngredients[j].name;
+					dish.ingredients[j].quantity = data.extendedIngredients[j].amount;
+					dish.ingredients[j].unit = data.extendedIngredients[j].unitShort;
+					dish.ingredients[j].price = data.extendedIngredients[j].amount;
+				}
+				cb(dish);
+
+			},
+			error: function(data){
 
 			}
-
-			//cb(dish, numberOfDishesToGet);
-
-			}
+			
 		});
+	}
+
+	this.findProperDishType = function (obj) {
+		for(var i = 0; i < obj.length; i++){
+			if(obj[i] == 'starter' || obj[i] == 'main course' || obj[i] == 'dessert'){
+				return obj[i];
+			}
+		}
 	}
 
 	this.addRecipeInformation = function (dish, cb, numberOfDishesToGet){

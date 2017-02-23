@@ -7,7 +7,6 @@ var SelectDishController = function(view, model, sc){
     	var foodList = $("#selectDish").find("#foodList").get(0);
         foodList.innerHTML = '';
     	var filter = $("#selectDish").find("#selectedDishSearch").get(0).value;
-    	console.log(filter);	
     	var type = $("#selectDish").find("#chosenCourse").get(0).value;
     	foodList.innerHTML = "<img src='images/39.gif'>";
     	model.getAllDishes(type,filter, function(d, value){
@@ -17,11 +16,19 @@ var SelectDishController = function(view, model, sc){
     			self.populateDishList();
     		}
 
+    	},
+    	function (errorCode) {
+    		if(errorCode == -3000){
+    			foodList.innerHTML = "No recipes found with the given search critera.";
+    		}
+    		if(errorCode == 404){
+    			foodList.innerHTML = "Something went wrong. Check your internet connection.";
+    		}
     	});
 
 
     }
-    view.searchButton.click();
+    //view.searchButton.click();
 
     this.populateDishList = function(){
     	var foodList = $("#selectDish").find("#foodList").get(0);
@@ -59,7 +66,7 @@ var SelectDishController = function(view, model, sc){
 
 	        //FOOD DESCRIPTION 4 (text)
 	        var foodDescription = document.createElement("p");
-	        foodDescription.innerHTML = dish.description;
+	        foodDescription.innerHTML = dish.description.slice(0,200) + "...";
 	        foodContainer.append(foodDescription);
 	    }
 	}

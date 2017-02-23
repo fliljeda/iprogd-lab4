@@ -37,7 +37,9 @@ var Print = function (container, model){
 			//Create a column with its image
 			var image = document.createElement("div");
 			image.className += "col-md-2";
-			image.innerHTML = "<img src=\"images/" + menu[i].image + "\">";
+			if(!(typeof(menu[i].image) == 'undefined')){
+				image.innerHTML = '<img src="' + menu[i].image + '">';
+			}
 
 			//Create a column with its description
 			var desc = document.createElement("div");

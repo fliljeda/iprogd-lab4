@@ -9,6 +9,7 @@ var SideBar = function (container,model) {
 	var starter;
 	var main;
 	var dessert;
+	var sideBarSelf = this;
 
 	this.removeStarter = document.createElement("button");
 	this.removeStarter.type = "button";
@@ -144,18 +145,26 @@ var SideBar = function (container,model) {
 
 	this.update = function (obj) {
 		guests = model.getNumberOfGuests();
+		var dishToShow = {};
+
+		if (!(model.getDishToShow() == -1)){
+			model.getDish(model.getDishToShow(), function (dishToGet) {
+				dishToShow = dishToGet;
+				if(!(typeof(dishToShow) == 'undefined') && !(typeof(dishToShow.ingredients) == 'undefined')){
+					totalPendingDishPrice = sideBarSelf.getTotalDishPrice(dishToShow, guests);
+				}
+				pendingSum.innerHTML = totalPendingDishPrice; 
+				pendingSum1.innerHTML = 'SEK ' + (totalMenuPrice + totalPendingDishPrice);
+			});
+		}
+		
+		starter = model.getSelectedDish("starter");
+		main = model.getSelectedDish("main course");
+		dessert = model.getSelectedDish("dessert");
 		totalMenuPrice = model.getTotalMenuPrice();
 		allMenuDishes = model.getFullMenu();
-		starter = model.getSelectedDish("starter");
-		main = model.getSelectedDish("main dish");
-		dessert = model.getSelectedDish("dessert");
-		var dishToShow = model.getDish(model.getDishToShow());
-
-		if(!(typeof(dishToShow) == 'undefined')){
-			totalPendingDishPrice = this.getTotalDishPrice(dishToShow, guests);
-		}
-		pendingSum.innerHTML = totalPendingDishPrice; 
 		pendingSum1.innerHTML = 'SEK ' + (totalMenuPrice + totalPendingDishPrice);
+
 		this.rePopSideBar(starter,main,dessert);
 		if(!(typeof(obj) == 'undefined') && obj.dishId == -1){
 			pendingSum.innerHTML = 0;
