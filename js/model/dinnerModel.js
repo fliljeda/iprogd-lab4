@@ -194,9 +194,6 @@ var DinnerModel = function() {
 				}
 				cb(dish);
 
-			},
-			error: function(data){
-
 			}
 			
 		});

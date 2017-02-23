@@ -66,6 +66,7 @@ var SelectDishController = function(view, model, sc){
 
 	        //FOOD DESCRIPTION 4 (text)
 	        var foodDescription = document.createElement("p");
+	        if (dish.description == null) dish.description = " ";
 	        foodDescription.innerHTML = dish.description.slice(0,200) + "...";
 	        foodContainer.append(foodDescription);
 	    }
